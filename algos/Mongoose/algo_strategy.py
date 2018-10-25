@@ -5,23 +5,6 @@ import warnings
 from sys import maxsize
 
 
-"""
-Most of the algo code you write will be in this file unless you create new
-modules yourself. Start by modifying the 'on_turn' function.
-
-Advanced strategy tips:
-
-Additional functions are made available by importing the AdvancedGameState
-class from gamelib/advanced.py as a replcement for the regular GameState class
-in game.py.
-
-You can analyze action frames by modifying algocore.py.
-
-The GameState.map object can be manually manipulated to create hypothetical
-board states. Though, we recommended making a copy of the map to preserve
-the actual current map state.
-"""
-
 class AlgoStrategy(gamelib.AlgoCore):
     def __init__(self):
         super().__init__()
@@ -58,39 +41,47 @@ class AlgoStrategy(gamelib.AlgoCore):
 
         game_state.submit_turn()
 
-    """
-    NOTE: All the methods after this point are part of the sample starter-algo
-    strategy and can safey be replaced for your custom algo.
-    """
+
     def starter_strategy(self, game_state):
 
         self.build_defences(game_state)
-
-        """
-        Finally deploy our information units to attack.
-        """
         self.deploy_attackers(game_state)
 
 
     def build_defences(self, game_state):
-        for i in range (3,16):
-            if game_state.can_spawn(FILTER, [i,10]):
-                game_state.attempt_spawn(FILTER, [i,10])
-        for i in range (19,25):
-            if game_state.can_spawn(FILTER, [i,10]):
-                game_state.attempt_spawn(FILTER, [i,10])
 
-        sidewalls = [[0,13],[1,12],[2,11],[27,13],[26,12],[25,11]]
+        """Turn ONE"""
+        turnOneFilters = [[0,13],[1,13],[2,13],[3,13],[4,12],[26,13],[25,12],[10,12],[15,12]]
+        turnOneDestructors = [[1,12],[2,12],[3,12],[27,13],[26,12],[25,12],[10,11],[15,11]]
+        for i in turnOneFilters:
+            if game_state.can_spawn(FILTER, i):
+                game_state.attempt_spawn(FILTER, i)
+        for i in turnOneDestructors:
+            if game_state.can_spawn(DESTRUCTOR, i):
+                game_state.attempt_spawn(DESTRUCTOR, i)
 
-        for place in sidewalls:
-            if game_state.can_spawn(FILTER, place):
-                game_state.attempt_spawn(FILTER, place)
+        """ the  wall """
 
-        if game_state.can_spawn(ENCRYPTOR, [15,9] ):
-            game_state.attempt_spawn(ENCRYPTOR, [15,9])
+        starterWall = [[5,12],[6,12],[7,12],[8,12],[9,12],[10,12],[11,12],[12,12],[13,12],
+                    [14,12],[15,12],[16,12],[19,12],[18,12],[19,12],[20,12],[21,12],[22,12]]
 
-        if game_state.can_spawn(ENCRYPTOR, [19,9] ):
-            game_state.attempt_spawn(ENCRYPTOR, [19,9])
+        for i in starterWall:
+            if game_state.can_spawn(FILTER, i):
+                game_state.attempt_spawn(FILTER, i)
+
+        if game_state.can_spawn(ENCRYPTOR, [21,11]):
+            game_state.attempt_spawn(ENCRYPTOR, [21,11])
+
+        """ Wall of DESTRUCTOR """
+        destructorWall = [[6,11],[7,11],[8,11],[10,11],[12,11],[14,11],[16,11],[18,11],[20,11]]
+
+        for place in destructorWall:
+            if game_state.can_spawn(DESTRUCTOR, place):
+                game_state.attempt_spawn(DESTRUCTOR, place)
+
+        """Extend the Wall"""
+
+
 
         all_locations = []
         for i in range(game_state.ARENA_SIZE):
